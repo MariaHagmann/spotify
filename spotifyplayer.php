@@ -23,6 +23,17 @@ if(!class_exists('SpotifyPlayer' )){
             add_action( 'admin_enqueue_scripts', array( $this, 'enqueue'));
             //style in frontend
             //add_action( 'wp_enqueue_scripts', array( $this, 'enqueue'));
+
+            add_action('admin_menu', array($this, 'add_admin_pages'))
+        }
+
+        public add_admin_pages() {
+            add_menu_page('Spotify Plugin', 'Spotify', 'manage_options', 'spotify_plugin', 
+            array($this, 'admin_index'), 'dashicons-store', 110)
+        }
+
+        public function admin_index(){
+
         }
 
         protected function create_post_type(){
