@@ -7,7 +7,7 @@ Plugin Name: Spotify Player
 Plugin URI: http://SpotifyPlayer 
 Description: This is my first Wordpress Plugin about creating a spotify player
 Version: 1.0.0
-Author: Riccardo Ramos
+Author: Maria Hagmann
 Text Domain: spotify
 */
 
@@ -18,6 +18,12 @@ if(!class_exists('SpotifyPlayer' )){
     class SpotifyPlayer
     {
         
+    public $plugin;
+
+    function _construct() {
+        $this->plugin = plugin_basename(__FILE__);
+    }
+
         function register(){
             //style in backend
             add_action( 'admin_enqueue_scripts', array( $this, 'enqueue'));
@@ -28,16 +34,17 @@ if(!class_exists('SpotifyPlayer' )){
 
             plugin_basename(__FILE__);
 
-            add_filter('plugin_action_link-', array($this, 'settings_link'));
+            add_filter("plugin_action_link_$this->plugin", array($this, 'settings_link'));
         }
 
         public function settings_link($links){
+                $settings_link = '<a href="options-general.php?page=spotify_plugin"> Settings </a>';
 
         }
 
-        public add_admin_pages() {
+        public function add_admin_pages() {
             add_menu_page('Spotify Plugin', 'Spotify', 'manage_options', 'spotify_plugin', 
-            array($this, 'admin_index'), 'dashicons-store', 110)
+            array($this, 'admin_index'), 'dashicons-store', 110);
         }
 
         public function admin_index(){
@@ -69,7 +76,7 @@ if(!class_exists('SpotifyPlayer' )){
     $SpotifyPlayer = new SpotifyPlayer();
     $SpotifyPlayer->register();
 
-    register_activation_hook(__FILE__, array('PluginActivate', 'activate'));
+    register_activation_hook(__FILE__, array($SpotifyPlayer, 'activate'));
 
     require_once plugin_dir_path(__FILE__) . 'inc/plugin-deactivate.php';
     register_activation_hook(__FILE__, array('PluginDeactivate', 'deactivate'));
