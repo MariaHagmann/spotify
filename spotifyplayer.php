@@ -24,7 +24,15 @@ if(!class_exists('SpotifyPlayer' )){
             //style in frontend
             //add_action( 'wp_enqueue_scripts', array( $this, 'enqueue'));
 
-            add_action('admin_menu', array($this, 'add_admin_pages'))
+            add_action('admin_menu', array($this, 'add_admin_pages'));
+
+            plugin_basename(__FILE__);
+
+            add_filter('plugin_action_link-', array($this, 'settings_link'));
+        }
+
+        public function settings_link($links){
+
         }
 
         public add_admin_pages() {
