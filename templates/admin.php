@@ -1,4 +1,4 @@
-<?php
+<?php //Code von Matthias
 class Admin
 {
     public function __construct()
@@ -7,7 +7,6 @@ class Admin
         add_action('admin_init', array($this, 'page_init'));
     }
 
-    // Add options page
     public function add_plugin_page()
     {
         add_menu_page(
@@ -19,7 +18,6 @@ class Admin
         );
     }
 
-    // Create options page
     public function create_admin_page()
     {
         ?>
@@ -36,24 +34,58 @@ class Admin
         <?php
     }
 
-    // Register and add fields for a select between 3 values "Timo", "Maria" and "Ricky"
     public function page_init()
     {
+        // Register person field
         register_setting(
             'spotifyplayer_settings',
-            'spotifyplayer__selectPerson',
+            'spotifyplayerselectPerson',
             array($this, 'selectPerson')
         );
+
+        // Register ClientID and ClientSecret fields
+        register_setting(
+            'spotifyplayer_settings',
+            'spotifyplayer_clientID'
+        );
+        register_setting(
+            'spotifyplayer_settings',
+            'spotifyplayer_clientSecret'
+        );
+
+        add_settings_section(
+            'spotifyplayer_section',
+            'Settings',
+            array($this, 'print_section_info'),
+            'spotifyplayer_settings'
+        );
+
         add_settings_field(
-            'spotifyplayer__selectPerson',
+            'spotifyplayerselectPerson',
             'person',
             array($this, 'person_callback'),
             'spotifyplayer_settings',
             'spotifyplayer_section'
         );
+
+        // Add ClientID and ClientSecret fields
+        add_settings_field(
+            'spotifyplayer_clientID',
+            'Client ID',
+            array($this, 'clientID_callback'),
+            'spotifyplayer_settings',
+            'spotifyplayer_section'
+        );
+
+        add_settings_field(
+            'spotifyplayer_clientSecret',
+            'Client Secret',
+            array($this, 'clientSecret_callback'),
+            'spotifyplayer_settings',
+            'spotifyplayer_section'
+        );
     }
 
-    //Person callback
     public function person_callback()
     {
         $value = get_option('spotifyplayerselectPerson', 'Ricky');
@@ -63,11 +95,24 @@ class Admin
         echo '<option value="Ricky" ' . selected($value, 'Ricky', false) . '>Ricky</option>';
         echo '</select>';
     }
-    
-        // Print section information
-        public function print_section_info()
-        {
-            print 'Choose person for view of the spotifyplayer:';
-        }
+
+    // ClientID callback
+    public function clientID_callback()
+    {
+        $value = get_option('spotifyplayer_clientID');
+        echo '<input type="text" name="spotifyplayer_clientID" value="' . esc_attr($value) . '">';
+    }
+
+    // ClientSecret callback
+    public function clientSecret_callback()
+    {
+        $value = get_option('spotifyplayer_clientSecret');
+        echo '<input type="text" name="spotifyplayer_clientSecret" value="' . esc_attr($value) . '">';
+    }
+
+    public function print_section_info()
+    {
+        print 'Choose person for view of the spotifyplayer and enter your Client ID and Secret:';
+    }
 
 }

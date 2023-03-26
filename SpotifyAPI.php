@@ -5,24 +5,11 @@ class SpotifyAPI
     private $clientSecret;
     private $accessToken;
 
-    public function __construct($clientId, $clientSecret)
+    public function __construct()
     {
-        $this->clientId = $clientId;
-        $this->clientSecret = $clientSecret;
-        
-        if (isset($_POST['submit'])) {
-            switch ($_POST['shortcode']) {
-                case 'shortcode1':
-                echo do_shortcode('[spotify]');
-                break;
-                case 'shortcode2':
-                echo do_shortcode('[shortcode2]');
-                break;
-                case 'shortcode3':
-                echo do_shortcode('[shortcode3]');
-                break;
-            }
-        }
+        $this->clientId = get_option('spotifyplayer_clientID');
+        $this->clientSecret = get_option('spotifyplayer_clientSecret');;
+
         add_shortcode('spotify', array($this, 'shortcode'));
     }
 
@@ -42,7 +29,6 @@ class SpotifyAPI
         curl_close($ch);
 
         $data = json_decode($response, true);
-        //Funktionniert nicht
         $this->accessToken = $_POST['AT'];
     }
     
@@ -63,150 +49,730 @@ class SpotifyAPI
         
     return $data;
     }
-    public function shortcode()
-    {
-    
-   
-    $this->getAccessToken();
-
-    $data = $this->getCurrentTrack();
-
-    
-        $currentTrack = $data->item->name;
-        $artist = $data->item->artists[0]->name; 
-        $img = $data->item->album->images[0]->url; 
-        $progress_ms = $data->progress_ms;
-        $progress = $progress_ms /1000 ;
-        
-
-        echo 'Currently playing: ' . $currentTrack .  '<br>';
-        echo $progress;
+        //Code von Ricky
+        public function RickyView($currentTrack,$artist,$img,$progress_ms,$duration,$data,$play)
+        {
             echo '
             <!DOCTYPE html>
-            <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Spotify Player Plugin</title>
-                </head>
-                <body>
+            <html>
+            <head>
+                <link rel="stylesheet" type="text/css" href="style.css">
+                <title>Widget player</title>
+                
+                <meta charset="UTF-8" />
+                    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                    <title>Spotify widget player</title>
+
+                    <link
+                        rel="stylesheet"
+                        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+                        integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+                        crossorigin="anonymous"
+                        referrerpolicy="no-referrer"
+                    />
+            </head>
+            <body>      
+
                     <form action="" method="POST">
                         Access Token: <input type="text" name="AT" /><br />
                         <input type="Submit" value="Absenden" />                           
                     </form>
-                    <div class="background" id="myHeader"> ' ;
-                        if(!empty($data)){
-                            echo '<div class="grid-container">
-                            <div class="grid-item1"><img src="' . $img . '" alt="Cover" ></div>
-                            <div class="grid-item2"><h4 class="text">' . $currentTrack . '</h4></div>
-                            <div class="grid-item3"><p class="text">' . $artist . '</p></div>
-                            <div class="grid-item4">qw</div>
-                            <div class="grid-item9"><input type="range" min="1" max="100" value="' . $progress . '" class="slider" id="myRange"></div>
-                        </div>';
-                        }else{
-                            echo '<div style="margin: 5%;">Play a Song!</div>';
-                        }
-                    echo '</div>
-                    <style>
+
+                    <div class="position">
+                    <div class="music-player">
+                        <div class="container">
+                            <div class="song-bar">
+                                <div class="song-infos">
+                                    <div class="image-container">
+                                        <img src="' . $img . '" alt="" />
+                                    </div>
+                                    <div class="song-description">
+                                        <p class="title">
+                                        ' . $currentTrack . '
+                                        </p>
+                                        <p class="artist">' . $artist . '</p>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                        
+                        
+
+                            <div class="container">
+                                <div class="control-buttons">                  
+                                    <i class="fas fa-step-backward"></i>
+                                    <i class="play-pause fas fa-play"></i>
+                                    <i class="fas fa-step-forward"></i>   
+                                </div>
+                            </div>
+                            <div class="progress-controller">
+                                <div class="progress-container">
+                                    
+                                        <div class="progress-bar">
+                                            <input type="range" min="0" max="' . $duration . '" value="' . $progress_ms . '" disabled style="width:250%";>
+                                        </div>
+                                
+                                </div>
+                            </div>  
+                        </div>
+                        
+                    </div>
+                    </div>
+
+
+            </body> 
+            <style>
+            @import url(//db.onlinewebfonts.com/c/860c3ec7bbc5da3e97233ccecafe512e?family=Circular+Std+Book);
+
+                * {
+                    box-sizing: border-box;
+                    font-family: "circular std book", sans-serif;
+                }
+                
+                body {
+                    margin: 0;
+                    padding: 0;
+                    background-color: #222;
+                    font-size: 14px;
+                }
+                i{
+                    color: var(--secondary-color);
+                }
+                i:hover{
+                    color: var(--primary-color);
+                }
+                .song-bar {
+                    position: sticky;
+                    left: var(--padding);
+                
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    justify-content: flex-start;
+                    gap: 1.5rem;
+                    width: 100%;
+                    margin: 3%;
+                }
+                
+                .song-infos {
+                    display: flex;
+                    align-items: center;
+                    gap: 1em;
+                }
+                .image-container {
+                    --size: 4.5em;
+                    flex-shrink: 0;
+                    width: var(--size);
+                    height: var(--size);
+                }
+                .image-container img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+                .song-description p {
+                    margin: 0.2em;
+                }
+                .title,
+                .artist {
+                    display: -webkit-box;
+                    -webkit-box-orient: vertical;
+                    -webkit-line-clamp: 1;
+                    overflow: hidden;
+                }
+                .title:hover,
+                .artist:hover {
+                    text-decoration: underline;
+                }
+                .artist{
+                    color: var(--secondary-color);
+                }
+                .icons{
+                    display: flex;
+                    gap: 1em;
+                }
+                .slider {
+                    -webkit-appearance: none;
+                    width: 100%;
+                    height: 15px;
+                    border-radius: 5px;  
+                    background: #d3d3d3;
+                    outline: none;
+                    opacity: 0.7;
+                    -webkit-transition: .2s;
+                    transition: opacity .2s;
+                  }
+                  
+                  .slider::-webkit-slider-thumb {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    width: 25px;
+                    height: 25px;
+                    border-radius: 50%; 
+                    background: #04AA6D;
+                    cursor: pointer;
+                  }
+                  
+                  .slider::-moz-range-thumb {
+                    width: 25px;
+                    height: 25px;
+                    border-radius: 50%;
+                    background: #04AA6D;
+                    cursor: pointer;
+                  }
+                .control-buttons{
+                    display: flex;
+                    align-items: center;
+                    gap: 2em;
                     
-                        .sticky {
-                        position: fixed;
-                        top: 0;
-                        width: 100%;
-                        }
-                        .background{
-                            background-color: #403E3E; 
-                            margin-top: 120px;
-                            margin-left: 1%;
-                            width: 450px; 
-                            height: 300px; 
-                            border-radius: 20px;
-                            position:fixed;
-                        }
-                        .grid-container {
-                            display: grid;
-                            grid-template-columns: 40% 60% ;
-                            grid-template-rows: 50% 20% ;
-                        }
-                        .grid-item1 {
-                            grid-row: 1 / 3;
-                            border: 1px solid rgba(0, 0, 0, 0.8);
-                            
-        
-                        }
-                        .grid-item2 {
-                            grid-row: 1 ;
-                            border: 1px solid rgba(0, 0, 0, 0.8);
-        
-                        }
-                        .grid-item3 {
-                            grid-row: 2;
-                            border: 1px solid rgba(0, 0, 0, 0.8);
-        
-                        }
-                        .grid-item4 {
-                            grid-row: 3;
-                            border: 1px solid rgba(0, 0, 0, 0.8);
-        
-                        }
-                        .grid-item9 {
-                            grid-row: 3 ;
-                            border: 1px solid rgba(0, 0, 0, 0.8);
-                            text-align: center;
-                            padding: 2px;
-        
-                        }
-                        img{
-                            padding: 20%; 
-                            grid-row: 1 / 4;
-                            width: 100px;
-                            height: 100px;
-                            border-radius: 25px;
-                        }
-                        .text{
-                            margin-left: 20px;
-                            margin-top: 20px;
-                            color: white;
-                            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-                            
-                        }
-                        .slider {
-                            -webkit-appearance: none;
-                            width: 95%;
-                            height: 5px;
-                            border-radius: 5px;  
-                            background: #d3d3d3;
-                            outline: none;
-                            opacity: 0.7;
-                            -webkit-transition: .2s;
-                            transition: opacity .2s;
-                            margin:20px;
-                        }
+                }
+                .play-pause{
+                    display: inline-block;
+                    padding: 1em;
+                    background-color: var(--primary-color);
+                    color: #111;
+                    border-radius: 50%;
+                }
+                .play-pause:hover{
+                    transform: scale(1.1);
+                    color: #111;
+                }                
+                .music-player {
+                    --primary-color: #ddd;
+                    --secondary-color: #999;
+                    --green-color: #2d5;
+                    --padding: 1em;
+                    background-color: #111;
+                    position: fixed; 
+                
+                    height: 7rem;
+                    padding: var(--padding);
+                    color: var(--primary-color);
+                
+                    display: flex;
+                    justify-content: space-around;
+                    align-items: flex-start;
+                    margin: 1em;
+                    flex-shrink: 0;
+                    width: 25em;
+                    height: 15em;
+                    flex-direction: column;
+                
+                    border-radius: 25px;
+                    border: 2px solid #000;
+                }
+                
+                .container {
+                    display: flex;
+                    justify-content: space-around;
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+                
+                .position {
+                    display: flex;
+                    flex-direction: column;
+                    margin-top: 3%;
+                    position: sticky;
+                    margin-right: 3%;
                         
-                        .slider::-webkit-slider-thumb {
-                            -webkit-appearance: none;
-                            appearance: none;
-                            width: 10px;
-                            height: 10px;
-                            border-radius: 50%; 
-                            background: #ffffff;
-                            cursor: pointer;
-                        }
+                }
+                }</style>
+            </html>';
+        }
+        //Code von Maria
+        public function MariaView($currentTrack,$artist,$img,$progress_ms,$duration,$data,$play)
+        {
+            echo '
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <link rel="stylesheet" type="text/css" href="style.css">
+                <title>Widget player</title>
+                
+                <meta charset="UTF-8" />
+                    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                    <title>Spotify widget player</title>
+
+                    <link
+                        rel="stylesheet"
+                        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+                        integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+                        crossorigin="anonymous"
+                        referrerpolicy="no-referrer"
+                    />
+            </head>
+            <body>     
+                        <div class="token">
+                        <form action="" method="POST">
+                            Access Token: <input type="text" name="AT" /><br />
+                            <input type="Submit" value="Absenden" />                           
+                        </form>
+                        </div>
+                    
+
+                    <div class="position">
+                    <div class="music-player">
+                        <div class="container">
+                        <div class="song-bar">
+                            <div class="song-infos">
+                                <div class="image-container">
+                                    <img src="' . $img . '" alt="" />
+                                </div>
+                                <div class="song-description">
+                                    <p class="title">
+                                    ' . $currentTrack . '
+                                    </p>
+                                    <p class="artist">' . $artist . '</p>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
                         
-                        .slider::-moz-range-thumb {
-                            width: 25px;
-                            height: 25px;
-                            border-radius: 50%;
-                            background: #ffffff;
-                            cursor: pointer;
-                        }
-                    </style>
-                </body>
-            </html>
-            ';
+                        <div class="progress-controller">
+                                <div class="progress-container">
+                                    
+                                        <div class="progress-bar">
+                                            <input type="range" min="0" max="' . $duration . '" value="' . $progress_ms . '" disabled style="width:100%";>
+                                        </div>
+                                
+                                </div>
+                            </div>  
+
+                        <div class="container">
+                            <div class="control-buttons">                  
+                                <i class="fas fa-step-backward"></i>
+                                <i class="play-pause fas fa-play"></i>
+                                <i class="fas fa-step-forward"></i>   
+                            </div>
+                        </div>
+                        </div>
+                        
+                    </div>
+                    </div>
+
+
+            </body> 
+            <style>
+            @import url(//db.onlinewebfonts.com/c/860c3ec7bbc5da3e97233ccecafe512e?family=Circular+Std+Book);
+
+                * {
+                    box-sizing: border-box;
+                    font-family: "circular std book", sans-serif;
+                }
+                
+                body {
+                    margin: 0;
+                    padding: 0;
+                    background-color: #222;
+                    font-size: 14px;
+                }
+                
+                
+                i{
+                    color: var(--secondary-color);
+                }
+                i:hover{
+                    color: var(--primary-color);
+                }
+                .song-bar {
+                    position: sticky;
+                    left: var(--padding);
+                
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    justify-content: flex-start;
+                    gap: 1.5rem;
+                    width: 90%;
+                    margin: 3%;
+                }
+                
+                .song-infos {
+                    display: flex;
+                    align-items: center;
+                    gap: 1em;
+                }
+                .image-container {
+                    --size: 4.5em;
+                    flex-shrink: 0;
+                    width: var(--size);
+                    height: var(--size);
+                }
+                .image-container img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+                .song-description p {
+                    margin: 0.2em;
+                }
+                .title,
+                .artist {
+                    display: -webkit-box;
+                    -webkit-box-orient: vertical;
+                    -webkit-line-clamp: 1;
+                    overflow: hidden;
+                }
+                .title:hover,
+                .artist:hover {
+                    text-decoration: underline;
+                }
+                .artist{
+                    color: var(--secondary-color);
+                }
+                .icons{
+                    display: flex;
+                    gap: 1em;
+                }
+                .progress-controller{
+                    width: 100%;
+                    display: flex;
+                    justify-content: space-around;
+                    flex-direction: column;
+                    align-items: center;
+                    color: var(--secondary-color);
+                }
+                .control-buttons{
+                    display: flex;
+                    align-items: center;
+                    gap: 2em;
+                    padding-left: 80%;
+                }
+                .play-pause{
+                    display: inline-block;
+                    padding: 1em;
+                    background-color: var(--primary-color);
+                    color: #111;
+                    border-radius: 50%;
+                }
+                .play-pause:hover{
+                    transform: scale(1.1);
+                    color: #111;
+                }
+                .progress-container{
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 1em;
+                }
+                .progress-bar{
+                    height: 4px;
+                    border-radius: 10px;
+                    width: 70%;
+                }
+                .progress{
+                    position: sticky;
+                    height: 100%;
+                    width: 30%;
+                    border-radius: 10px;
+                }
+                
+                
+                .music-player {
+                    --primary-color: #ddd;
+                    --secondary-color: #999;
+                    --green-color: #2d5;
+                    --padding: 1em;
+                    background-color: #111;
+                    position: fixed; 
+                
+                    height: 7rem;
+                    padding: var(--padding);
+                    color: var(--primary-color);
+                
+                    display: flex;
+                    justify-content: space-around;
+                    align-items: flex-start;
+                    margin: 1em;
+                    flex-shrink: 0;
+                    width: 25em;
+                    height: 15em;
+                    flex-direction: column;
+                
+                    border-radius: 25px;
+                    border: 2px solid #000;
+                }
+                
+                .container {
+                    display: flex;
+                    justify-content: space-around;
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+                
+                .position {
+                    display: flex;
+                    flex-direction: column;
+                    margin-top: 3%;
+                    position: sticky;
+                    margin-right: 3%;
+                        
+                }
+                
+                .token {
+                    --primary-color: #ddd;
+                    --secondary-color: #999;
+                    --padding: 2em;
+                    background-color: #111;
+                    position: fixed;
+                
+                    height: 7rem;
+                    padding: var(--padding);
+                    color: var(--primary-color);
+                
+                    display: flex;
+                    justify-content: flex-end;
+                    align-items: flex-end;
+                    margin-top: 1em;
+                    margin-left: 70em;
+                    flex-shrink: 0;
+                    width: 20em;
+                    height: 12em;
+                    flex-direction: column;
+                
+                    border-radius: 25px;
+                    border: 2px solid #000;
+                }</style>
+            </html>';
+        }
+        //Code von Timo
+        public function TimoView($currentTrack,$artist,$img,$progress_ms,$duration,$data,$play)
+        {
+            echo '<!DOCTYPE html>
+            <html>
+            <head>
+                <link rel="stylesheet" type="text/css" href="style.css">
+                <title>Music Player</title>
+                
+                <meta charset="UTF-8" />
+                    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                    <title>Spotify music player</title>
+                    <link rel="stylesheet" href="style.css" />
+            
+                    <link
+                        rel="stylesheet"
+                        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+                        integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+                        crossorigin="anonymous"
+                        referrerpolicy="no-referrer"
+                    />
+            </head>
+            <body>
+                     <div class="music-player">
+                        <div class="song-bar">
+                            <div class="song-infos">
+                                <div class="image-container">
+                                    
+                                    <img src="' . $img . '" width="100" height="100">
+                                </div>
+                                <div class="song-description">
+                                    <p class="title">'
+                                        
+                                    . $currentTrack .
+                                        
+                                    '</p>
+                                    <p class="artist">
+                                       
+                                      "'. $artist .'"
+                                       
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+            
+                        <div class="progress-controller">
+                            <div class="control-buttons">                  
+                                <i class="fas fa-step-backward"></i>
+                                <i class="play-pause fas fa-play"></i>
+                                <i class="fas fa-step-forward"></i>   
+                            </div>
+                            <div class="progress-controller">
+                                <div class="progress-container">
+                                    
+                                        <div class="progress-bar">
+                                            <input type="range" min="0" max="' . $duration . '" value="' . $progress_ms . '" disabled style="width:100%";>
+                                        </div>
+                                
+                                </div>
+                            </div>  
+                        </div>
+                       
+                    </div>
+            </body> 
+            <style>
+            * {
+                box-sizing: border-box;
+                font-family: "circular std book", sans-serif;
+            }
+            
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: #222;
+                font-size: 14px;
+            }
+            
+            .music-player {
+                --primary-color: #ddd;
+                --secondary-color: #999;
+                --green-color: #2d5;
+                --padding: 1em;
+                background-color: #111;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                position: fixed;
+                width: 100%;
+                height: 7rem;
+                padding: var(--padding);
+                margin-top: 39.5em;
+                color: var(--primary-color);
+            }
+            i{
+                color: var(--secondary-color);
+            }
+            i:hover{
+                color: var(--primary-color);
+            }
+            .song-bar {
+                position: absolute;
+                left: var(--padding);
+            
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-start;
+                gap: 1.5rem;
+                width: 25%;
+            }
+            
+            .song-infos {
+                display: flex;
+                align-items: center;
+                gap: 1em;
+            }
+            .image-container {
+                --size: 4.5em;
+                flex-shrink: 0;
+                width: var(--size);
+                height: var(--size);
+            }
+            .image-container img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            .song-description p {
+                margin: 0.2em;
+            }
+            .title,
+            .artist {
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 1;
+                overflow: hidden;
+            }
+            .title:hover,
+            .artist:hover {
+                text-decoration: underline;
+            }
+            .artist{
+                color: var(--secondary-color);
+            }
+            
+            .progress-controller{
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                align-items: center;
+                
+                color: var(--secondary-color);
+            }
+            .control-buttons{
+                display: flex;
+                align-items: center;
+                gap: 2em;
+            }
+            .play-pause{
+                display: inline-block;
+                padding: 1em;
+                background-color: var(--primary-color);
+                color: #111;
+                border-radius: 50%;
+            }
+            .play-pause:hover{
+                transform: scale(1.1);
+                color: #111;
+            }
+            .progress-container{
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 1em;
+            }
+            .progress-bar{
+                height: 4px;
+                border-radius: 10px;
+                width: 30%;
+            }
+            .progress{
+                position: relative;
+                height: 100%;
+                width:  80%;
+                border-radius: 10px;
+                background-color: var(--secondary-color);
+            }
+            .progress-bar:hover .progress{
+                background-color: var(--green-color);
+            }
+            .progress-bar:hover .progress::after{
+                content: "";
+                position: absolute;
+                --size: 1em;
+                width: var(--size);
+                height: var(--size);
+                right: 0;
+                border-radius: 50%;
+                background-color: var(--primary-color);
+                transform: translate(50%, calc(2px - 50%));
+            }
+             </style>
+            </html>';
+        }
+
+    public function shortcode()
+    {   
+        $this->getAccessToken();
+
+        $data = $this->getCurrentTrack();
+
+        $currentTrack = $data->item->name;
+        $artist = $data->item->artists[0]->name; 
+        $img = $data->item->album->images[0]->url; 
+        $duration = $data->item->duration_ms;
+        $play = $data->is_playing;
+        $progress_ms = $data->progress_ms;
+
+
+        $person = get_option('spotifyplayerselectPerson');
+        if($person == 'Ricky'){
+            $this->RickyView($currentTrack,$artist,$img,$progress_ms,$duration,$data,$play);
+        } else if($person == 'Maria'){
+            $this->MariaView($currentTrack,$artist,$img,$progress_ms,$duration,$data,$play);
+        } else if($person == 'Timo'){
+            $this->TimoView($currentTrack,$artist,$img,$progress_ms,$duration,$data,$play);
+        }
+    
 }
+
+
+
+
 }
-
-
-

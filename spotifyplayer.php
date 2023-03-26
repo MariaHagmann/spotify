@@ -8,12 +8,9 @@ Plugin Name: Spotify Player
 Plugin URI: http://SpotifyPlayer 
 Description: This is my first Wordpress Plugin about creating a spotify player
 Version: 1.0.0
-Author: Riccardo Ramos
+Author: Spotify team
 Text Domain: spotify
 */
-
-$clientId = '747c64ed25b24a1a896d61bc8c3a181f';
-$clientSecret = '178f5fefe8ae4514a7503366ffeebdd2';
 
 
 
@@ -45,7 +42,7 @@ if(class_exists('Inc\\Init' )){
 require_once(plugin_dir_path(__FILE__) . 'SpotifyAPI.php');
 
 if(class_exists('SpotifyAPI')){
-    $spotifyAPI = new SpotifyAPI($clientId, $clientSecret);
+    $spotifyAPI = new SpotifyAPI();
 }
 require_once(plugin_dir_path(__FILE__) . '/templates/admin.php');
 
