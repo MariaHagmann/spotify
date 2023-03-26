@@ -1,0 +1,17 @@
+{
+    "name": "ricky/spotify_m150",
+    "description": "Awesome starter plugn",
+    "type": "project",
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "ricky0304",
+            "email": "riccardo.ramos@stud.edubs.ch"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4":{"Inc\\": "./inc"}
+    }
+}

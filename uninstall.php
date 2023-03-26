@@ -19,4 +19,4 @@ foreach($songs as $song){
 */
 
 global $wpbd;
-$wpbd->query("DELETE FROM wp_posts WHERE post_type = 'song'")
+$wpbd->query("DELETE FROM wp_posts WHERE post_type = 'song'");
