@@ -102,7 +102,7 @@ class SpotifyAPI
                             <div class="container">
                                 <div class="control-buttons">                  
                                     <i class="fas fa-step-backward"></i>
-                                    <i class="play-pause fas fa-play"></i>
+                                    <i class="fas fa-play"></i>
                                     <i class="fas fa-step-forward"></i>   
                                 </div>
                             </div>
@@ -110,7 +110,7 @@ class SpotifyAPI
                                 <div class="progress-container">
                                     
                                         <div class="progress-bar">
-                                            <input type="range" min="0" max="' . $duration . '" value="' . $progress_ms . '" disabled style="width:250%";>
+                                            <input type="range" min="0" max="' . $duration . '" value="' . $progress_ms . '" disabled style="width:345%";>
                                         </div>
                                 
                                 </div>
@@ -125,27 +125,13 @@ class SpotifyAPI
             <style>
             @import url(//db.onlinewebfonts.com/c/860c3ec7bbc5da3e97233ccecafe512e?family=Circular+Std+Book);
 
-                * {
-                    box-sizing: border-box;
-                    font-family: "circular std book", sans-serif;
-                }
-                
-                body {
-                    margin: 0;
-                    padding: 0;
-                    background-color: #222;
-                    font-size: 14px;
-                }
                 i{
                     color: var(--secondary-color);
                 }
                 i:hover{
                     color: var(--primary-color);
                 }
-                .song-bar {
-                    position: sticky;
-                    left: var(--padding);
-                
+                .song-bar {        
                     display: flex;
                     flex-direction: column;
                     align-items: flex-start;
@@ -161,7 +147,7 @@ class SpotifyAPI
                     gap: 1em;
                 }
                 .image-container {
-                    --size: 4.5em;
+                    --size: 6em;
                     flex-shrink: 0;
                     width: var(--size);
                     height: var(--size);
@@ -188,39 +174,8 @@ class SpotifyAPI
                 .artist{
                     color: var(--secondary-color);
                 }
-                .icons{
-                    display: flex;
-                    gap: 1em;
-                }
-                .slider {
-                    -webkit-appearance: none;
-                    width: 100%;
-                    height: 15px;
-                    border-radius: 5px;  
-                    background: #d3d3d3;
-                    outline: none;
-                    opacity: 0.7;
-                    -webkit-transition: .2s;
-                    transition: opacity .2s;
-                  }
-                  
-                  .slider::-webkit-slider-thumb {
-                    -webkit-appearance: none;
-                    appearance: none;
-                    width: 25px;
-                    height: 25px;
-                    border-radius: 50%; 
-                    background: #04AA6D;
-                    cursor: pointer;
-                  }
-                  
-                  .slider::-moz-range-thumb {
-                    width: 25px;
-                    height: 25px;
-                    border-radius: 50%;
-                    background: #04AA6D;
-                    cursor: pointer;
-                  }
+                
+                
                 .control-buttons{
                     display: flex;
                     align-items: center;
@@ -240,13 +195,9 @@ class SpotifyAPI
                 }                
                 .music-player {
                     --primary-color: #ddd;
-                    --secondary-color: #999;
-                    --green-color: #2d5;
-                    --padding: 1em;
+                    --padding: 1.75em;
                     background-color: #111;
                     position: fixed; 
-                
-                    height: 7rem;
                     padding: var(--padding);
                     color: var(--primary-color);
                 
@@ -256,11 +207,10 @@ class SpotifyAPI
                     margin: 1em;
                     flex-shrink: 0;
                     width: 25em;
-                    height: 15em;
+                    height: 10em;
                     flex-direction: column;
-                
+                    gap: 9%;
                     border-radius: 25px;
-                    border: 2px solid #000;
                 }
                 
                 .container {
@@ -528,7 +478,7 @@ class SpotifyAPI
                     justify-content: flex-end;
                     align-items: flex-end;
                     margin-top: 1em;
-                    margin-left: 70em;
+                    margin-left: 45em;
                     flex-shrink: 0;
                     width: 20em;
                     height: 12em;
@@ -630,7 +580,7 @@ class SpotifyAPI
                 width: 100%;
                 height: 7rem;
                 padding: var(--padding);
-                margin-top: 39.5em;
+                margin-top: 24em;
                 color: var(--primary-color);
             }
             i{
